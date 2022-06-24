@@ -5,7 +5,7 @@ namespace AwgenCore
   /// <summary>
   /// A resource identifier that represents a name and namespace pair for a registered resource pointer.
   /// </summary>
-  public class ResourceLocation
+  public class ResourceLocation<T> where T : IRegistrable<T>
   {
     /// <summary>
     /// The name of the resource.
@@ -28,29 +28,24 @@ namespace AwgenCore
     /// <summary>
     /// Creates a new ResourceLocation instance.
     /// </summary>
-    /// <param name="name">The name of the resource. Cannot be empty or null.</param>
-    /// <param name="classname">The namespace of the resource. Cannot be empty or null.</param>
-    /// <param name="type">The type of the resource. Cannot be null.</param>
-    public ResourceLocation(string name, string classname, Type type)
+    /// <param name="name">The name of the resource.</param>
+    /// <param name="classname">The namespace of the resource.</param>
+    /// <exception cref="ArgumentException">If the name or classname are empty or null.</exception>
+    public ResourceLocation(string name, string classname)
     {
       if (string.IsNullOrEmpty(name))
       {
-        throw new System.ArgumentException($"'{nameof(name)}' cannot be null or empty.", nameof(name));
+        throw new ArgumentException($"'{nameof(name)}' cannot be null or empty.", nameof(name));
       }
 
       if (string.IsNullOrEmpty(classname))
       {
-        throw new System.ArgumentException($"'{nameof(classname)}' cannot be null or empty.", nameof(classname));
-      }
-
-      if (type == null)
-      {
-        throw new ArgumentNullException(nameof(type));
+        throw new ArgumentException($"'{nameof(classname)}' cannot be null or empty.", nameof(classname));
       }
 
       this.name = name;
       this.classname = classname;
-      this.type = type;
+      this.type = typeof(T);
     }
 
 
@@ -59,7 +54,7 @@ namespace AwgenCore
     {
       if ((obj == null) || !this.GetType().Equals(obj.GetType())) return false;
 
-      ResourceLocation res = (ResourceLocation)obj;
+      ResourceLocation<T> res = (ResourceLocation<T>)obj;
       return res.name.Equals(this.name)
           && res.classname.Equals(this.classname)
           && res.type.Equals(this.type);
@@ -80,7 +75,7 @@ namespace AwgenCore
     /// <inheritdoc/>
     public override string ToString()
     {
-      return String.Format("<{0} {1}:{2}>", this.type, this.classname, this.name);
+      return String.Format("<{0} {1}:{2}>", this.type.Name, this.classname, this.name);
     }
   }
 }
