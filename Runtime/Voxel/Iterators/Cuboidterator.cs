@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace AwgenCore
+namespace AwgenCore.Voxel
 {
   /// <summary>
   /// A cuboid shaped block position iterator.

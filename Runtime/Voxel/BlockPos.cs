@@ -1,6 +1,6 @@
 using System;
 
-namespace AwgenCore
+namespace AwgenCore.Voxel
 {
   /// <summary>
   /// Represents a block position in world coordinates.
