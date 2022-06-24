@@ -9,7 +9,8 @@ namespace AwgenCore
 
 
     /// <summary>
-    /// Gets a registable instance from this registry with the given resource location.
+    /// Gets a registable instance from this registry with the given resource
+    /// location.
     /// </summary>
     /// <param name="resourceLocation">The resource location.</param>
     /// <returns>The registrable instance, or null if it does not exist.</returns>
@@ -20,7 +21,8 @@ namespace AwgenCore
 
 
     /// <summary>
-    /// Creates a new Registry instance. Can only be called by the global registry.
+    /// Creates a new Registry instance. Can only be called by the global
+    /// registry.
     /// </summary>
     internal Registry() { }
 

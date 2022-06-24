@@ -3,7 +3,8 @@ using System;
 namespace AwgenCore
 {
   /// <summary>
-  /// A resource identifier that represents a name and namespace pair for a registered resource pointer.
+  /// A resource identifier that represents a name and namespace pair for a
+  /// registered resource pointer.
   /// </summary>
   public class ResourceLocation<T> where T : IRegistrable<T>
   {

@@ -3,7 +3,8 @@ namespace AwgenCore
   public interface IRegistrable<T> where T : IRegistrable<T>
   {
     /// <summary>
-    /// Gets the unquie resource location for this registrable object type.
+    /// Gets the unquie resource location for this registrable object type. This
+    /// value should never change.
     /// </summary>
     /// <returns>The resource location pointer.</returns>
     ResourceLocation<T> GetResourceLocation();
