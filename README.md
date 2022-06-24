@@ -8,10 +8,8 @@ The core Unity package for the Awgen engine. Provides the overal logic and data 
 
 - [How to use](#how-to-use)
 - [Install](#install)
-  - [via npm](#via-npm)
   - [via OpenUPM](#via-openupm)
   - [via Git URL](#via-git-url)
-  - [Tests](#tests)
 - [Configuration](#configuration)
 
 <!-- toc -->
@@ -38,20 +36,6 @@ Open `Packages/manifest.json` with your favorite text editor. Add following line
   "dependencies": {
     "net.whg.awgen-core": "https://github.com/TheDudeFromCI/AwgenCore.git"
   }
-}
-```
-
-### Tests
-
-The package can optionally be set as *testable*.
-In practice this means that tests in the package will be visible in the [Unity Test Runner](https://docs.unity3d.com/2017.4/Documentation/Manual/testing-editortestsrunner.html).
-
-Open `Packages/manifest.json` with your favorite text editor. Add following line **after** the dependencies block:
-```json
-{
-  "dependencies": {
-  },
-  "testables": [ "net.whg.awgen-core" ]
 }
 ```
 
