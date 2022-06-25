@@ -1,9 +1,6 @@
 {
-    "name": "Unity.net.whg.awgen-core",
-    "rootNamespace": "",
-    "references": [
-        "Unity.net.whg.awgen-core.Common"
-    ],
+    "name": "Unity.net.whg.awgen-core.Common",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -12,5 +9,5 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
-    "noEngineReferences": false
+    "noEngineReferences": true
 }

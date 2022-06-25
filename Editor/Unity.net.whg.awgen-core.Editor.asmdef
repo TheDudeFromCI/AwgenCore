@@ -1,6 +1,9 @@
 {
     "name": "Unity.net.whg.awgen-core.Editor",
-    "references": [],
+    "rootNamespace": "",
+    "references": [
+        "GUID:27788505bc8e7cf70add9da16c104e32"
+    ],
     "includePlatforms": [
         "Editor"
     ],
