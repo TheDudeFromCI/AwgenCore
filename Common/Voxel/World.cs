@@ -1,3 +1,4 @@
+using System;
 using AwgenCore;
 using System.Collections.Generic;
 
@@ -6,6 +7,19 @@ namespace AwgenCore.Voxel
   public class World
   {
     private readonly Dictionary<BlockPos, Region> regions = new Dictionary<BlockPos, Region>();
+
+
+    /// <summary>
+    /// An event that is triggered whenever this world generates a new chunk.
+    /// </summary>
+    public event Action<ChunkLoadedEvent> onChunkLoaded;
+
+
+    /// <summary>
+    /// An event that is called whenever a block is updated. This does not
+    /// trigger for blocks being created when a chunk is loaded.
+    /// </summary>
+    public event Action<BlockUpdatedEvent> onBlockUpdated;
 
 
     /// <summary>
@@ -21,7 +35,7 @@ namespace AwgenCore.Voxel
       if (this.regions.ContainsKey(pos)) return this.regions[pos];
       if (!create) return null;
 
-      Region region = new Region(pos);
+      Region region = new Region(this, pos);
       this.regions[pos] = region;
       return region;
     }
@@ -52,6 +66,26 @@ namespace AwgenCore.Voxel
       Chunk chunk = GetChunk(pos, create);
       if (chunk == null) return null;
       return chunk.GetBlock(pos);
+    }
+
+
+    /// <summary>
+    /// Causes the ChunkLoadedEvent to be triggered for this world.
+    /// </summary>
+    /// <param name="ev">The event.</param>
+    internal void TriggerChunkLoadedEvent(ChunkLoadedEvent ev)
+    {
+      this.onChunkLoaded(ev);
+    }
+
+
+    /// <summary>
+    /// Causes the BlockUpdatedEvent to be triggered for this world.
+    /// </summary>
+    /// <param name="ev">The event.</param>
+    internal void TriggerBlockUpdatedEvent(BlockUpdatedEvent ev)
+    {
+      this.onBlockUpdated(ev);
     }
   }
 }

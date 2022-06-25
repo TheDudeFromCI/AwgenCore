@@ -9,6 +9,7 @@ namespace AwgenCore.Voxel
   public class Block
   {
     private readonly Dictionary<string, string> properties = new Dictionary<string, string>();
+    private readonly Chunk chunk;
     private readonly BlockPos position;
     private BlockType blockType;
 
@@ -16,13 +17,16 @@ namespace AwgenCore.Voxel
     /// <summary>
     /// Creates a new Block instance.
     /// </summary>
+    /// <param name="chunk">The chunk that this block is in.</param>
     /// <param name="position">The position of this block instance.</param>
     /// <param name="blockType">The type of this block.</param>
     /// <exception cref="ArgumentNullException">If the block type is null.</exception>
-    internal Block(BlockPos position, BlockType blockType)
+    internal Block(Chunk chunk, BlockPos position, BlockType blockType)
     {
+      if (chunk == null) throw new ArgumentNullException(nameof(chunk));
       if (blockType == null) throw new ArgumentNullException(nameof(blockType));
 
+      this.chunk = chunk;
       this.position = position;
       this.blockType = blockType;
       ResetProperties();
@@ -59,7 +63,9 @@ namespace AwgenCore.Voxel
     public void SetBlockType(BlockType blockType)
     {
       if (blockType == null) throw new ArgumentNullException(nameof(blockType));
+
       this.blockType = blockType;
+      GetWorld().TriggerBlockUpdatedEvent(new BlockUpdatedEvent(this));
       ResetProperties();
     }
 
@@ -104,6 +110,26 @@ namespace AwgenCore.Voxel
       }
 
       this.properties[property] = value;
+    }
+
+
+    /// <summary>
+    /// Gets the chunk that this block is in.
+    /// </summary>
+    /// <returns>The chunk.</returns>
+    public Chunk GetChunk()
+    {
+      return this.chunk;
+    }
+
+
+    /// <summary>
+    /// Gets the world that this block is in.
+    /// </summary>
+    /// <returns>The world.</returns>
+    public World GetWorld()
+    {
+      return this.chunk.GetWorld();
     }
   }
 }

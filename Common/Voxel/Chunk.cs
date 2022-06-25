@@ -1,3 +1,5 @@
+using System;
+
 namespace AwgenCore.Voxel
 {
   /// <summary>
@@ -5,16 +7,21 @@ namespace AwgenCore.Voxel
   /// </summary>
   public class Chunk
   {
-    private readonly BlockPos chunkPos;
     private readonly Block[] blocks = new Block[16 * 16 * 16];
+    private readonly World world;
+    private readonly BlockPos chunkPos;
 
 
     /// <summary>
     /// Creates a new Chunk instance.
     /// </summary>
+    /// <param name="world">The world that this chunk is in.</param>
     /// <param name="chunkPos">The block position of the min corner of this chunk.</param>
-    internal Chunk(BlockPos chunkPos)
+    internal Chunk(World world, BlockPos chunkPos)
     {
+      if (world == null) throw new ArgumentNullException(nameof(world));
+
+      this.world = world;
       this.chunkPos = chunkPos;
 
       var minPos = new BlockPos(0, 0, 0);
@@ -22,8 +29,10 @@ namespace AwgenCore.Voxel
       foreach (var pos in CuboidIterator.FromTwoCorners(minPos, maxPos))
       {
         int index = pos.x * 256 + pos.y * 16 + pos.z;
-        this.blocks[index] = new Block(pos + chunkPos, BlockRegistry.VOID_BLOCK);
+        this.blocks[index] = new Block(this, pos + chunkPos, BlockRegistry.VOID_BLOCK);
       }
+
+      GetWorld().TriggerChunkLoadedEvent(new ChunkLoadedEvent(this));
     }
 
 
@@ -49,6 +58,16 @@ namespace AwgenCore.Voxel
       pos &= 15;
       var index = pos.x * 256 + pos.y * 16 + pos.z;
       return this.blocks[index];
+    }
+
+
+    /// <summary>
+    /// Gets the world that this chunk is in.
+    /// </summary>
+    /// <returns>The world.</returns>
+    public World GetWorld()
+    {
+      return this.world;
     }
   }
 }
