@@ -22,7 +22,7 @@ namespace AwgenCore.Voxel
       foreach (var pos in CuboidIterator.FromTwoCorners(minPos, maxPos))
       {
         int index = pos.x * 256 + pos.y * 16 + pos.z;
-        this.blocks[index] = new Block(pos + chunkPos);
+        this.blocks[index] = new Block(pos + chunkPos, BlockRegistry.VOID_BLOCK);
       }
     }
 
