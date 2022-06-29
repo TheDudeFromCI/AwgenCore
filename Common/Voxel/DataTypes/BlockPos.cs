@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace AwgenCore.Voxel
 {
@@ -13,6 +14,12 @@ namespace AwgenCore.Voxel
 
 
     /// <summary>
+    /// Converts this block position into a Unity Vector3.
+    /// </summary>
+    public Vector3 AsVector3 => new Vector3(x, y, z);
+
+
+    /// <summary>
     /// Creates a new block posiiton instance at the given coordinates.
     /// </summary>
     /// <param name="x">The x coordinate.</param>
@@ -23,6 +30,43 @@ namespace AwgenCore.Voxel
       this.x = x;
       this.y = y;
       this.z = z;
+    }
+
+
+    /// <summary>
+    /// Offsets this block position by a given direction and number of units in
+    /// that direction. The result is then returned as a new block position.
+    /// </summary>
+    /// <param name="direction">The direction of the offset.</param>
+    /// <param name="units">The number of units to shift.</param>
+    /// <returns>The new block position.</returns>
+    public BlockPos Offset(Direction direction, int units)
+    {
+      return this + direction.AsBlockPos * units;
+    }
+
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+      return obj is BlockPos pos &&
+             x == pos.x &&
+             y == pos.y &&
+             z == pos.z;
+    }
+
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+      return HashCode.Combine(x, y, z);
+    }
+
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+      return $"({x}, {y}, {z})";
     }
 
 
@@ -97,6 +141,42 @@ namespace AwgenCore.Voxel
     public static BlockPos operator +(BlockPos a, BlockPos b)
     {
       return new BlockPos(a.x + b.x, a.y + b.y, a.z + b.z);
+    }
+
+
+    /// <summary>
+    /// Scales the block position vector by a given integer value.
+    /// </summary>
+    /// <param name="pos">The block position.</param>
+    /// <param name="val">The scaler value.</param>
+    /// <returns>The new block position.</returns>
+    public static BlockPos operator *(BlockPos pos, int val)
+    {
+      return new BlockPos(pos.x * val, pos.y * val, pos.z * val);
+    }
+
+
+    /// <summary>
+    /// Checks if two block positions are equal.
+    /// </summary>
+    /// <param name="a">The first block position.</param>
+    /// <param name="b">The second block position.</param>
+    /// <returns>True if both block positions are equal. False otherwise.</returns>
+    public static bool operator ==(BlockPos a, BlockPos b)
+    {
+      return a.x == b.x && a.y == b.y && a.z == b.z;
+    }
+
+
+    /// <summary>
+    /// Checks if two block positions are not equal.
+    /// </summary>
+    /// <param name="a">The first block position.</param>
+    /// <param name="b">The second block position.</param>
+    /// <returns>True if both block positions are not equal. False otherwise.</returns>
+    public static bool operator !=(BlockPos a, BlockPos b)
+    {
+      return a.x != b.x || a.y != b.y || a.z != b.z;
     }
   }
 }

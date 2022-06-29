@@ -8,6 +8,8 @@ namespace AwgenCore.Voxel
   {
     public readonly static VoidBlock VOID_BLOCK = new VoidBlock();
 
+    public readonly static StoneBlock STONE_BLOCK = new StoneBlock();
+
 
     /// <summary>
     /// Create the registry and register all default block types on class access.
@@ -16,6 +18,7 @@ namespace AwgenCore.Voxel
     {
       var registry = GlobalRegistry.GetOrCreateRegistry<BlockType>();
       registry.Register(VOID_BLOCK);
+      registry.Register(STONE_BLOCK);
     }
 
 

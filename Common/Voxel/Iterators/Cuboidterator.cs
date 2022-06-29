@@ -8,13 +8,25 @@ namespace AwgenCore.Voxel
   public class CuboidIterator : IEnumerable<BlockPos>
   {
     /// <summary>
+    /// Creates a new CuboidIterator instance over all blocks in a single chunk
+    /// locatated at the world origin.
+    /// </summary>
+    /// <returns>A new cuboid interator instance.</returns>
+    public static CuboidIterator OverChunk()
+    {
+      var min = new BlockPos(0, 0, 0);
+      var max = new BlockPos(15, 15, 15);
+      return new CuboidIterator(min, max);
+    }
+
+    /// <summary>
     /// Creates a new CuboidIterator instance from two opposite positions that
     /// define the selected region boundries.
     /// </summary>
     /// <param name="p1">The first position.</param>
     /// <param name="p2">The second position.</param>
     /// <returns>A new cuboid iterator instance.</returns>
-    public static CuboidIterator FromTwoCorners(BlockPos p1, BlockPos p2)
+    public static CuboidIterator FromTwoPoints(BlockPos p1, BlockPos p2)
     {
       var min = BlockPos.Min(p1, p2);
       var max = BlockPos.Max(p1, p2);

@@ -45,14 +45,13 @@ namespace AwgenCore.Voxel
     /// <returns>The chunk, or null if the chunk does not exist.</returns>
     internal Chunk GetChunk(BlockPos blockPos, bool create)
     {
-      blockPos &= 255;
-      blockPos >>= 4;
-      int index = blockPos.x * 256 + blockPos.y * 16 + blockPos.z;
+      var indexPos = (blockPos & 255) >> 4;
+      int index = indexPos.x * 256 + indexPos.y * 16 + indexPos.z;
 
       if (this.chunks[index] != null) return this.chunks[index];
       if (!create) return null;
 
-      this.chunks[index] = new Chunk(this.world, blockPos << 4);
+      this.chunks[index] = new Chunk(this.world, blockPos & ~15);
       return this.chunks[index];
     }
 

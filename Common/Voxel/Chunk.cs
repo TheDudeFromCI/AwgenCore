@@ -24,9 +24,7 @@ namespace AwgenCore.Voxel
       this.world = world;
       this.chunkPos = chunkPos;
 
-      var minPos = new BlockPos(0, 0, 0);
-      var maxPos = new BlockPos(15, 15, 15);
-      foreach (var pos in CuboidIterator.FromTwoCorners(minPos, maxPos))
+      foreach (var pos in CuboidIterator.OverChunk())
       {
         int index = pos.x * 256 + pos.y * 16 + pos.z;
         this.blocks[index] = new Block(this, pos + chunkPos, BlockRegistry.VOID_BLOCK);
