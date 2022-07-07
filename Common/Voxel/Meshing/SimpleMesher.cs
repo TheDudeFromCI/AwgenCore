@@ -9,6 +9,25 @@ namespace AwgenCore.Voxel
   /// </summary>
   public class SimpleMesher : IVoxelMesher
   {
+    private readonly List<int> cubeTriangles = new List<int>();
+    private readonly List<Vector3> cubeVertices = new List<Vector3>();
+    private readonly List<Vector3> cubeNormals = new List<Vector3>();
+    private readonly List<Vector2> cubeUVs = new List<Vector2>();
+
+
+    /// <summary>
+    /// Creates a new SimpleMesher instance.
+    /// </summary>
+    /// <param name="cubeModel">The mesh model to use for all cubes.</param>
+    public SimpleMesher(Mesh cubeModel)
+    {
+      cubeModel.GetTriangles(this.cubeTriangles, 0);
+      cubeModel.GetVertices(this.cubeVertices);
+      cubeModel.GetNormals(this.cubeNormals);
+      cubeModel.GetUVs(0, this.cubeUVs);
+    }
+
+
     /// <inheritdoc/>
     public Mesh GenerateMesh(Chunk chunk)
     {
@@ -31,10 +50,15 @@ namespace AwgenCore.Voxel
 
           if (neighbor.OccludesSurface(direction.Opposite)) continue;
 
-          GenerateQuadIndices(triangles, vertices.Count);
-          GenerateQuadVertices(blockPos, direction, vertices);
-          GenerateQuadNormals(direction, normals);
-          GenerateQuadUVs(uvs);
+          var vertexCount = vertices.Count;
+          foreach (var index in this.cubeTriangles)
+            triangles.Add(index + vertexCount);
+
+          foreach (var vertex in this.cubeVertices)
+            vertices.Add(vertex + blockPos.AsVector3);
+
+          normals.AddRange(this.cubeNormals);
+          uvs.AddRange(this.cubeUVs);
         }
       }
 
@@ -44,6 +68,8 @@ namespace AwgenCore.Voxel
       mesh.SetUVs(0, uvs);
       mesh.SetTriangles(triangles, 0);
       mesh.RecalculateBounds();
+      mesh.RecalculateTangents();
+      mesh.Optimize();
       return mesh;
     }
 
@@ -61,75 +87,6 @@ namespace AwgenCore.Voxel
       if ((pos & 15) == pos) return chunk.GetBlock(pos);
       pos += chunk.GetChunkPosition();
       return chunk.GetWorld().GetBlock(pos, false);
-    }
-
-
-    /// <summary>
-    /// Generates the next set of quad indices for a mesh and adds it to the
-    /// index list.
-    /// </summary>
-    /// <param name="indices">The list of indices to append to.</param>
-    /// <param name="vertexCount">The current number of vertices in the mesh.</param>
-    private void GenerateQuadIndices(List<int> indices, int vertexCount)
-    {
-      indices.Add(vertexCount + 0);
-      indices.Add(vertexCount + 1);
-      indices.Add(vertexCount + 2);
-      indices.Add(vertexCount + 0);
-      indices.Add(vertexCount + 2);
-      indices.Add(vertexCount + 3);
-    }
-
-
-    /// <summary>
-    /// Generates the vertice locations for a quad and adds them to the vertex
-    /// position list.
-    /// </summary>
-    /// <param name="pos">The local position of the block within the chunk.</param>
-    /// <param name="direction">The direction, or surface, of the block to generate.</param>
-    /// <param name="vertices">The vertex list to append to.</param>
-    private void GenerateQuadVertices(BlockPos pos, Direction direction, List<Vector3> vertices)
-    {
-      var center = pos.AsVector3 + new Vector3(0.5f, 0.5f, 0.5f);
-      var v0 = pos.AsVector3 + Vector3.Max(direction.AsVector3, Vector3.zero);
-      var v1 = Quaternion.AngleAxis(90, direction.AsVector3) * (v0 - center) + center;
-      var v2 = Quaternion.AngleAxis(90, direction.AsVector3) * (v1 - center) + center;
-      var v3 = Quaternion.AngleAxis(90, direction.AsVector3) * (v2 - center) + center;
-
-      vertices.Add(v0);
-      vertices.Add(v1);
-      vertices.Add(v2);
-      vertices.Add(v3);
-    }
-
-
-    /// <summary>
-    /// Generates the quad normals for a given direction and adds them to the
-    /// normals list.
-    /// </summary>
-    /// <param name="direction">The direction of the quad.</param>
-    /// <param name="normals">The normals list to append to.</param>
-    private void GenerateQuadNormals(Direction direction, List<Vector3> normals)
-    {
-      var normal = direction.AsVector3;
-      normals.Add(normal);
-      normals.Add(normal);
-      normals.Add(normal);
-      normals.Add(normal);
-    }
-
-
-    /// <summary>
-    /// Generates a set of UVs for the given quad face and adds them to the uvs
-    /// list.
-    /// </summary>
-    /// <param name="uvs">The uvs list to append to.</param>
-    private void GenerateQuadUVs(List<Vector2> uvs)
-    {
-      uvs.Add(new Vector2(1, 1));
-      uvs.Add(new Vector2(1, 0));
-      uvs.Add(new Vector2(0, 0));
-      uvs.Add(new Vector2(0, 1));
     }
   }
 }

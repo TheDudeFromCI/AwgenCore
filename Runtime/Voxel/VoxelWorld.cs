@@ -5,6 +5,12 @@ namespace AwgenCore.Voxel
 {
   public class VoxelWorld : MonoBehaviour
   {
+    [SerializeField]
+    private Material material;
+
+    [SerializeField]
+    private Mesh cubeMesh;
+
     private Dictionary<Chunk, GameObject> chunkObjects = new Dictionary<Chunk, GameObject>();
 
     public World World { get; private set; }
@@ -36,7 +42,7 @@ namespace AwgenCore.Voxel
       chunkObject.transform.localPosition = chunk.GetChunkPosition().AsVector3;
 
       chunkObject.AddComponent<MeshFilter>();
-      chunkObject.AddComponent<MeshRenderer>();
+      chunkObject.AddComponent<MeshRenderer>().sharedMaterial = this.material;
 
       this.chunkObjects[chunk] = chunkObject;
     }
@@ -44,7 +50,7 @@ namespace AwgenCore.Voxel
     private void OnBlockUpdated(BlockUpdatedEvent e)
     {
       var chunk = e.GetBlock().GetChunk();
-      var mesher = new SimpleMesher();
+      var mesher = new SimpleMesher(this.cubeMesh);
       var mesh = mesher.GenerateMesh(chunk);
 
       var chunkObject = this.chunkObjects[chunk];
