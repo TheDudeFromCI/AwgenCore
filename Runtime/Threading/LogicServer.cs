@@ -4,10 +4,11 @@ using System.Collections.Concurrent;
 
 namespace AwgenCore
 {
-  public class LogicThread
+  public class LogicServer
   {
     private readonly ConcurrentQueue<IRenderingTask> queue = new ConcurrentQueue<IRenderingTask>();
-    private readonly Thread thread;
+    private readonly Thread logicThread;
+    private readonly Thread renderThread;
     private readonly int targetFps;
     private bool running = true;
 
@@ -31,20 +32,39 @@ namespace AwgenCore
 
 
     /// <summary>
+    /// Checks whether or not the current thread is the logic thread.
+    /// </summary>
+    public bool IsLogicThread { get => Thread.CurrentThread == this.logicThread; }
+
+
+    /// <summary>
+    /// Checks whether or not the current thread is the render thread.
+    /// </summary>
+    public bool IsRenderThread { get => Thread.CurrentThread == this.renderThread; }
+
+
+    /// <summary>
+    /// Checks whether or not the current thread is a worker thread.
+    /// </summary>
+    public bool IsWorkerThread { get => !IsLogicThread && !IsRenderThread; }
+
+
+    /// <summary>
     /// Creates and starts a new LogicThread instance.
     /// </summary>
     /// <param name="targetFps">The target number of update ticks per second.</param>
     /// <exception cref="ArgumentException">If the targetFps is less than 1.</exception>
-    public LogicThread(int targetFps)
+    public LogicServer(int targetFps)
     {
       if (targetFps <= 0) throw new ArgumentException("Target tick rate cannot be below 1!", nameof(targetFps));
 
       this.targetFps = targetFps;
+      this.renderThread = Thread.CurrentThread;
 
-      this.thread = new Thread(Run);
-      this.thread.Name = "Awgen Logic Server";
-      this.thread.IsBackground = true;
-      this.thread.Start();
+      this.logicThread = new Thread(Run);
+      this.logicThread.Name = "Awgen Logic Server";
+      this.logicThread.IsBackground = true;
+      this.logicThread.Start();
     }
 
 
@@ -54,7 +74,7 @@ namespace AwgenCore
     public void Stop()
     {
       this.running = false;
-      this.thread.Join();
+      this.logicThread.Join();
     }
 
 
