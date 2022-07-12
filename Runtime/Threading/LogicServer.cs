@@ -12,6 +12,7 @@ namespace AwgenCore
     private readonly ConcurrentQueue<WorkerTask> queuedWorkerTasks = new ConcurrentQueue<WorkerTask>();
     private readonly BlockingCollection<WorkerTask> activeWorkerTasks = new BlockingCollection<WorkerTask>();
     private readonly List<Thread> workerThreads = new List<Thread>();
+    private readonly List<LogicTask> logicUpdates = new List<LogicTask>();
     private readonly Thread logicThread;
     private readonly Thread renderThread;
     private readonly int targetFps;
@@ -135,6 +136,7 @@ namespace AwgenCore
     private void Update()
     {
       ExecuteWorkerTasks();
+      ExecuteLogicUpdates();
       ExecuteLogicTasks();
     }
 
@@ -150,6 +152,19 @@ namespace AwgenCore
 
       while (this.activeTasks > 0)
         Monitor.Wait(this.activeTasks);
+    }
+
+
+    /// <summary>
+    /// Causes all logic updates to be executed.
+    /// </summary>
+    private void ExecuteLogicUpdates()
+    {
+      lock (this.logicUpdates)
+      {
+        foreach (var update in this.logicUpdates)
+          update.Execute();
+      }
     }
 
 
@@ -230,6 +245,26 @@ namespace AwgenCore
     {
       if (!IsLogicThread) throw new InvalidOperationException("Worker tasks may only be triggered from the Logic Thread!");
       this.queuedWorkerTasks.Enqueue(task);
+    }
+
+
+    /// <summary>
+    /// Adds a new logic update to the logic thread. These act similar to
+    /// standard logic tasks, with the exception that they are not removed after
+    /// each frame. These updates are registered to be executed before any other
+    /// logic tasks and will always be executed every game time without needing
+    /// to be re-added to the queue. This method may not be called from within
+    /// the logic thread due to obvious concurrent modification issues.
+    /// </summary>
+    /// <param name="task">The task to add.</param>
+    /// <exception cref="InvalidOperationException">If this method is called from the logic thread.</exception>
+    public void AddLogicUpdate(LogicTask task)
+    {
+      if (IsLogicThread) throw new InvalidOperationException("Logic updates may not be added from within the logic thread!");
+      lock (this.logicUpdates)
+      {
+        this.logicUpdates.Add(task);
+      }
     }
   }
 }
