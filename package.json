@@ -2,7 +2,7 @@
   "name": "net.whg.awgen-core",
   "displayName": "Awgen Core",
   "version": "0.0.1",
-  "unity": "2019.4",
+  "unity": "2021.3",
   "description": "The core Unity package for the Awgen engine. Provides the overal logic and data structures that are used heavily in extending packages.",
   "keywords": [
     "unity",
@@ -28,5 +28,8 @@
   "author": "Wraithaven Games (https://github.com/TheDudeFromCI)",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "render-pipelines.universal": "12.1.7"
   }
 }
