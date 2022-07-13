@@ -180,7 +180,7 @@ namespace AwgenCore.Voxel
       chunkPos = default;
       if (IteratorIndex >= this.chunkLoadOrder.Count) return false;
 
-      chunkPos = this.chunkLoadOrder[IteratorIndex].Position;
+      chunkPos = this.chunkLoadOrder[IteratorIndex].Position + Position;
       IteratorIndex++;
       return true;
     }
