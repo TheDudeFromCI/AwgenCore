@@ -157,6 +157,19 @@ namespace AwgenCore.Voxel
 
 
     /// <summary>
+    /// Shifts the block position vector by a given integer value along all
+    /// axises.
+    /// </summary>
+    /// <param name="pos">The block position.</param>
+    /// <param name="val">The scaler value.</param>
+    /// <returns>The new block position.</returns>
+    public static BlockPos operator +(BlockPos pos, int val)
+    {
+      return new BlockPos(pos.x + val, pos.y + val, pos.z + val);
+    }
+
+
+    /// <summary>
     /// Checks if two block positions are equal.
     /// </summary>
     /// <param name="a">The first block position.</param>
