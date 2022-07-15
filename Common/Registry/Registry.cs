@@ -16,15 +16,12 @@ namespace AwgenCore
     /// <returns>The registrable instance, or null if it does not exist.</returns>
     public T this[ResourceLocation<T> resourceLocation]
     {
-      get => this.entries[resourceLocation];
+      get
+      {
+        if (!this.entries.ContainsKey(resourceLocation)) return null;
+        return this.entries[resourceLocation];
+      }
     }
-
-
-    /// <summary>
-    /// Creates a new Registry instance. Can only be called by the global
-    /// registry.
-    /// </summary>
-    internal Registry() { }
 
 
     /// <summary>
@@ -34,12 +31,8 @@ namespace AwgenCore
     /// <exception cref="ArgumentNullException">If the entry is null.</exception>
     public void Register(T entry)
     {
-      if (entry is null)
-      {
-        throw new ArgumentNullException(nameof(entry));
-      }
-
-      this.entries[entry.GetResourceLocation()] = entry;
+      if (entry is null) throw new ArgumentNullException(nameof(entry));
+      this.entries.Add(entry.Resource, entry);
     }
   }
 }

@@ -8,7 +8,7 @@ namespace AwgenCore.Voxel
   /// </summary>
   public class StoneBlock : BlockType
   {
-    public StoneBlock() : base("stone", "awgen")
+    public StoneBlock() : base(new ResourceLocation<BlockType>("awgen", "", "stone"))
     {
     }
   }

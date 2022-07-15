@@ -6,7 +6,7 @@ namespace AwgenCore.Voxel
   /// </summary>
   public class VoidBlock : BlockType
   {
-    public VoidBlock() : base("void", "awgen")
+    public VoidBlock() : base(new ResourceLocation<BlockType>("awgen", "", "void"))
     {
     }
 
