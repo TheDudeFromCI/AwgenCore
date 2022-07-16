@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace AwgenCore.Voxel
 {
   /// <summary>
@@ -13,6 +11,6 @@ namespace AwgenCore.Voxel
     /// </summary>
     /// <param name="chunk">The chunk to process.</param>
     /// <returns>A new mesh object.</returns>
-    Mesh GenerateMesh(Chunk chunk);
+    MeshData GenerateMesh(Chunk chunk);
   }
 }

@@ -24,24 +24,20 @@ namespace AwgenCore.Voxel
 
     protected void Start()
     {
-      var p1 = new BlockPos(-3, -3, -3);
-      var p2 = new BlockPos(3, 3, 3);
-      foreach (var pos in CuboidIterator.FromTwoPoints(p1, p2))
-      {
-        var block = World.GetBlock(pos, true);
-        block.SetBlockType(BlockRegistry.STONE_BLOCK);
-      }
+      var anchor = new ChunkLoadingAnchor();
+      var chunkLoadingTask = new ChunkLoadingTask(AwgenCore.Instance.LogicServer, World, anchor);
+      AwgenCore.Instance.LogicServer.AddLogicUpdate(chunkLoadingTask);
     }
 
     private void OnChunkLoaded(ChunkLoadedEvent e)
     {
       var chunk = e.GetChunk();
 
-      var chunkObject = new GameObject($"Chunk {chunk.GetChunkPosition() >> 4}");
+      var chunkObject = new GameObject($"Chunk {chunk.Position >> 4}");
       chunkObject.transform.SetParent(transform, false);
-      chunkObject.transform.localPosition = chunk.GetChunkPosition().AsVector3;
+      chunkObject.transform.localPosition = chunk.Position.AsVector3;
 
-      chunkObject.AddComponent<MeshFilter>();
+      chunkObject.AddComponent<MeshFilter>().sharedMesh = new Mesh();
       chunkObject.AddComponent<MeshRenderer>().sharedMaterial = this.material;
 
       this.chunkObjects[chunk] = chunkObject;
@@ -49,13 +45,13 @@ namespace AwgenCore.Voxel
 
     private void OnBlockUpdated(BlockUpdatedEvent e)
     {
-      var chunk = e.GetBlock().GetChunk();
-      var mesher = new SimpleMesher(this.cubeMesh);
+      var chunk = e.GetBlock().Chunk;
+      var mesher = new SimpleMesher(MeshData.CreateFromUnityMesh(this.cubeMesh));
       var mesh = mesher.GenerateMesh(chunk);
 
       var chunkObject = this.chunkObjects[chunk];
       var meshFilter = chunkObject.GetComponent<MeshFilter>();
-      meshFilter.sharedMesh = mesh;
+      mesh.UploadToUnity(meshFilter.sharedMesh);
     }
   }
 }
