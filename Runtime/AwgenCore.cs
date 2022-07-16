@@ -11,9 +11,6 @@ namespace AwgenCore
   /// </summary>
   public class AwgenCore : MonoBehaviour
   {
-    private static bool initialized;
-
-
     [Header("Logic Server")]
 
     [SerializeField, Range(1, 100)]
@@ -21,7 +18,16 @@ namespace AwgenCore
     private int gameTickRate = 20;
 
 
-    private LogicServer logicServer;
+    /// <summary>
+    /// A global singleton reference to the AwgenCore framework instance.
+    /// </summary>
+    public static AwgenCore Instance;
+
+
+    /// <summary>
+    /// Gets the logic server that is being managed by AwgenCore.
+    /// </summary>
+    public LogicServer LogicServer { get; private set; }
 
 
     /// <summary>
@@ -30,14 +36,29 @@ namespace AwgenCore
     /// </summary>
     protected void Awake()
     {
-      if (initialized) return;
-      DontDestroyOnLoad(gameObject);
-      initialized = true;
+      if (Instance != null)
+      {
+        Destroy(this.gameObject);
+        return;
+      }
+
+      Instance = this;
+      DontDestroyOnLoad(this.gameObject);
 
       var workers = Math.Max(SystemInfo.processorCount - 1, 1);
-      this.logicServer = new LogicServer(this.gameTickRate, workers);
+      LogicServer = new LogicServer(this.gameTickRate, workers);
 
       Voxel.BlockRegistry.Initialize();
+    }
+
+
+    /// <summary>
+    /// Called every frame to execute all pending rendering tasks on the logic
+    /// server.
+    /// </summary>
+    protected void Update()
+    {
+      LogicServer.SyncRendering();
     }
   }
 }

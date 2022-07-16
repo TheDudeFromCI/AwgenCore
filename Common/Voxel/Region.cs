@@ -8,8 +8,19 @@ namespace AwgenCore.Voxel
   internal class Region
   {
     private readonly Chunk[] chunks = new Chunk[16 * 16 * 16];
-    private readonly World world;
-    private readonly BlockPos regionPos;
+
+
+    /// <summary>
+    /// Gets the position of this region. The position is defined at the block
+    /// position of the minimum corner of this region boundries.
+    /// </summary>
+    public readonly BlockPos Position;
+
+
+    /// <summary>
+    /// Gets the world this region is in.
+    /// </summary>
+    public readonly World World;
 
 
     /// <summary>
@@ -21,19 +32,8 @@ namespace AwgenCore.Voxel
     {
       if (world == null) throw new ArgumentNullException(nameof(world));
 
-      this.world = world;
-      this.regionPos = regionPos;
-    }
-
-
-    /// <summary>
-    /// Gets the position of this region. The position is defined at the block
-    /// position of the minimum corner of this region boundries.
-    /// </summary>
-    /// <returns>The region position.</returns>
-    internal BlockPos GetRegionPosition()
-    {
-      return this.regionPos;
+      World = world;
+      Position = regionPos;
     }
 
 
@@ -51,18 +51,8 @@ namespace AwgenCore.Voxel
       if (this.chunks[index] != null) return this.chunks[index];
       if (!create) return null;
 
-      this.chunks[index] = new Chunk(this.world, blockPos & ~15);
+      this.chunks[index] = new Chunk(World, blockPos & ~15);
       return this.chunks[index];
-    }
-
-
-    /// <summary>
-    /// Gets the world that this region is in.
-    /// </summary>
-    /// <returns>The world.</returns>
-    internal World GetWorld()
-    {
-      return this.world;
     }
   }
 }

@@ -7,9 +7,50 @@ namespace AwgenCore.Voxel
   /// </summary>
   public class Chunk
   {
-    private readonly Block[] blocks = new Block[16 * 16 * 16];
-    private readonly World world;
-    private readonly BlockPos chunkPos;
+    private readonly Block[] blocks = new Block[BLOCK_COUNT];
+
+    /// <summary>
+    /// The total number of blocks within a single chunk.
+    /// </summary>
+    public const int BLOCK_COUNT = 16 * 16 * 16;
+
+
+    /// <summary>
+    /// Gets the world that this chunk is in.
+    /// </summary>
+    public readonly World World;
+
+
+    /// <summary>
+    /// Gets the block position of this chunk. The position is defined at the
+    /// block position of the minimum corner of this chunk boundries.
+    /// </summary>
+    public readonly BlockPos Position;
+
+
+    /// <summary>
+    /// Gets the block at the specified block position within this chunk. If the
+    /// block position is outside of the chunk, the coordinates are wrapped.
+    /// </summary>
+    /// <param name="pos">The block position.</param>
+    /// <returns>The block at the specified coordinates.</returns>
+    public Block this[BlockPos pos]
+    {
+      get
+      {
+        pos &= 15;
+        var index = pos.x * 256 + pos.y * 16 + pos.z;
+        return this.blocks[index];
+      }
+    }
+
+
+    /// <summary>
+    /// Gets the block at the specified block index within a 1D array.
+    /// </summary>
+    /// <param name="index">The local block index.</param>
+    /// <returns>The block at the given index.</returns>
+    public Block this[int index] { get => this.blocks[index]; }
 
 
     /// <summary>
@@ -21,8 +62,8 @@ namespace AwgenCore.Voxel
     {
       if (world == null) throw new ArgumentNullException(nameof(world));
 
-      this.world = world;
-      this.chunkPos = chunkPos;
+      World = world;
+      Position = chunkPos;
 
       foreach (var pos in CuboidIterator.OverChunk())
       {
@@ -30,42 +71,7 @@ namespace AwgenCore.Voxel
         this.blocks[index] = new Block(this, pos + chunkPos, BlockRegistry.VOID_BLOCK);
       }
 
-      GetWorld().TriggerChunkLoadedEvent(new ChunkLoadedEvent(this));
-    }
-
-
-    /// <summary>
-    /// Gets the position of this chunk. The position is defined at the block
-    /// position of the minimum corner of this chunk boundries.
-    /// </summary>
-    /// <returns>The region position.</returns>
-    public BlockPos GetChunkPosition()
-    {
-      return this.chunkPos;
-    }
-
-
-    /// <summary>
-    /// Gets the block at the specified block position within this chunk. If the
-    /// block position is outside of the chunk, the coordinates are wrapped.
-    /// </summary>
-    /// <param name="pos">The block position.</param>
-    /// <returns>The block at the specified coordinates.</returns>
-    public Block GetBlock(BlockPos pos)
-    {
-      pos &= 15;
-      var index = pos.x * 256 + pos.y * 16 + pos.z;
-      return this.blocks[index];
-    }
-
-
-    /// <summary>
-    /// Gets the world that this chunk is in.
-    /// </summary>
-    /// <returns>The world.</returns>
-    public World GetWorld()
-    {
-      return this.world;
+      World.TriggerChunkLoadedEvent(new ChunkLoadedEvent(this));
     }
   }
 }

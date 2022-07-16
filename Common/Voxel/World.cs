@@ -64,7 +64,7 @@ namespace AwgenCore.Voxel
     {
       Chunk chunk = GetChunk(pos, create);
       if (chunk == null) return null;
-      return chunk.GetBlock(pos);
+      return chunk[pos];
     }
 
 
