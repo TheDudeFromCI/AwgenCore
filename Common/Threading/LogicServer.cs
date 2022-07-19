@@ -188,10 +188,12 @@ namespace AwgenCore
     /// Causes all queued rendering tasks currently within the queue to be
     /// executed.
     /// </summary>
-    public void SyncRendering()
+    /// <param name="maxTasks">The maximum number of tasks that can be executed on this frame.</param>
+    public void SyncRendering(int maxTasks = int.MaxValue)
     {
+      var tasksExecuted = 0;
       RenderingTask task;
-      while (this.renderingTasks.TryDequeue(out task))
+      while (this.renderingTasks.TryDequeue(out task) && tasksExecuted++ < maxTasks)
         task.Execute();
     }
 

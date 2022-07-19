@@ -19,6 +19,10 @@ namespace AwgenCore
     [Tooltip("The number of game ticks that occur each second within the logic thread.")]
     private int gameTickRate = 20;
 
+    [SerializeField, Min(1)]
+    [Tooltip("The maximum number of rendering tasks that can be executed from the logic server each frame.")]
+    private int maxRenderingTasks = 2;
+
 
     [Header("TEMP")]
     [SerializeField]
@@ -75,7 +79,7 @@ namespace AwgenCore
     /// </summary>
     protected void Update()
     {
-      LogicServer.SyncRendering();
+      LogicServer.SyncRendering(this.maxRenderingTasks);
     }
 
 
