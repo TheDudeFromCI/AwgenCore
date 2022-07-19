@@ -170,6 +170,18 @@ namespace AwgenCore.Voxel
 
 
     /// <summary>
+    /// Shifts the block position vector by one unit in a given direction.
+    /// </summary>
+    /// <param name="pos">The block position.</param>
+    /// <param name="val">The direction.</param>
+    /// <returns>The new block position.</returns>
+    public static BlockPos operator +(BlockPos pos, Direction dir)
+    {
+      return pos + dir.AsBlockPos;
+    }
+
+
+    /// <summary>
     /// Checks if two block positions are equal.
     /// </summary>
     /// <param name="a">The first block position.</param>

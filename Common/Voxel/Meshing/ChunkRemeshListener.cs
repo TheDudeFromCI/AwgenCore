@@ -1,3 +1,5 @@
+using System;
+
 namespace AwgenCore.Voxel
 {
   /// <summary>
@@ -35,7 +37,15 @@ namespace AwgenCore.Voxel
     /// <param name="ev">The event.</param>
     private void OnChunkLoaded(ChunkLoadedEvent ev)
     {
-      RegenerateChunk(ev.GetChunk());
+      var chunk = ev.GetChunk();
+      RegenerateChunk(chunk);
+
+      RegenerateChunk(chunk.World.GetChunk(chunk.Position.Offset(Direction.North, 16), false));
+      RegenerateChunk(chunk.World.GetChunk(chunk.Position.Offset(Direction.East, 16), false));
+      RegenerateChunk(chunk.World.GetChunk(chunk.Position.Offset(Direction.South, 16), false));
+      RegenerateChunk(chunk.World.GetChunk(chunk.Position.Offset(Direction.West, 16), false));
+      RegenerateChunk(chunk.World.GetChunk(chunk.Position.Offset(Direction.Up, 16), false));
+      RegenerateChunk(chunk.World.GetChunk(chunk.Position.Offset(Direction.Down, 16), false));
     }
 
 
@@ -45,7 +55,21 @@ namespace AwgenCore.Voxel
     /// <param name="ev">The event.</param>
     private void OnBlockUpdated(BlockUpdatedEvent ev)
     {
-      RegenerateChunk(ev.GetBlock().Chunk);
+      var block = ev.GetBlock();
+      RegenerateChunk(block.Chunk);
+
+      Func<BlockPos, Chunk> GetChunk = delegate (BlockPos pos)
+      {
+        if (pos >> 4 == block.Position >> 4) return null;
+        return block.World.GetChunk(pos, false);
+      };
+
+      RegenerateChunk(GetChunk(block.Position + Direction.North));
+      RegenerateChunk(GetChunk(block.Position + Direction.East));
+      RegenerateChunk(GetChunk(block.Position + Direction.South));
+      RegenerateChunk(GetChunk(block.Position + Direction.West));
+      RegenerateChunk(GetChunk(block.Position + Direction.Up));
+      RegenerateChunk(GetChunk(block.Position + Direction.Down));
     }
 
 
@@ -55,6 +79,7 @@ namespace AwgenCore.Voxel
     /// <param name="chunk">The chunk to generate a mesh for.</param>
     private void RegenerateChunk(Chunk chunk)
     {
+      if (chunk == null) return;
       var task = new ChunkRemeshTask(this.logicServer, this.meshReciever, this.voxelMesher, chunk);
       this.logicServer.QueueWorkerTask(task);
     }
