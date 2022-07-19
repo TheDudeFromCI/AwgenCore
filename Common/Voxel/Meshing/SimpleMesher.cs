@@ -1,6 +1,3 @@
-using UnityEngine;
-using System.Collections.Generic;
-
 namespace AwgenCore.Voxel
 {
   /// <summary>
@@ -9,16 +6,16 @@ namespace AwgenCore.Voxel
   /// </summary>
   public class SimpleMesher : IVoxelMesher
   {
-    private readonly MeshData cubeMesh;
+    private readonly BlockType voidBlock;
 
 
     /// <summary>
     /// Creates a new SimpleMesher instance.
     /// </summary>
-    /// <param name="cubeMesh">The mesh data to use for all cubes.</param>
-    public SimpleMesher(MeshData cubeMesh)
+    /// <param name="voidBlock">The type of block to reference for ungenerated chunks.</param>
+    public SimpleMesher(BlockType voidBlock)
     {
-      this.cubeMesh = cubeMesh;
+      this.voidBlock = voidBlock;
     }
 
 
@@ -31,16 +28,17 @@ namespace AwgenCore.Voxel
       {
         var block = chunk[blockPos];
         var type = block.BlockType;
+        var meshData = block.Mesh;
 
         foreach (var direction in Direction.All)
         {
           if (!type.OccludesSurface(direction)) continue;
 
           var relativePos = blockPos.Offset(direction, 1);
-          var neighbor = GetBlock(chunk, relativePos)?.BlockType ?? BlockRegistry.VOID_BLOCK;
+          var neighbor = GetBlock(chunk, relativePos)?.BlockType ?? this.voidBlock;
           if (neighbor.OccludesSurface(direction.Opposite)) continue;
 
-          mesh.AppendMesh(this.cubeMesh, blockPos.AsVector3);
+          mesh.AppendMesh(meshData, blockPos.AsVector3);
         }
       }
 

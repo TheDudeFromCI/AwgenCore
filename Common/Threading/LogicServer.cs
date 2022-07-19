@@ -13,6 +13,7 @@ namespace AwgenCore
     private readonly BlockingCollection<WorkerTask> activeWorkerTasks = new BlockingCollection<WorkerTask>();
     private readonly List<Thread> workerThreads = new List<Thread>();
     private readonly List<LogicTask> logicUpdates = new List<LogicTask>();
+    private readonly object activeTasksLock = new object();
     private readonly Thread logicThread;
     private readonly Thread renderThread;
     private readonly int targetFps;
@@ -100,6 +101,7 @@ namespace AwgenCore
     {
       this.running = false;
       this.logicThread.Join();
+      foreach (var worker in this.workerThreads) worker.Join();
     }
 
 
@@ -121,10 +123,10 @@ namespace AwgenCore
         }
 
         var endTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        timeAcc += frameTime - endTime;
+        timeAcc += endTime - frameTime;
         frameTime = endTime;
 
-        var extraMs = (int)((timeDelta - timeAcc) * 1000);
+        var extraMs = (int)(timeDelta - timeAcc);
         if (extraMs >= 0) Thread.Sleep(extraMs);
       }
     }
@@ -150,8 +152,11 @@ namespace AwgenCore
         Interlocked.Increment(ref this.activeTasks);
       }
 
-      while (this.activeTasks > 0)
-        Monitor.Wait(this.activeTasks);
+      lock (this.activeTasksLock)
+      {
+        while (this.activeTasks > 0)
+          Monitor.Wait(this.activeTasksLock);
+      }
     }
 
 
@@ -204,7 +209,10 @@ namespace AwgenCore
           task.Execute();
           if (task.FinalizedTask != null) this.logicTasks.Enqueue(task.FinalizedTask);
           Interlocked.Decrement(ref this.activeTasks);
-          Monitor.Pulse(this.activeTasks);
+          lock (this.activeTasksLock)
+          {
+            Monitor.Pulse(this.activeTasksLock);
+          }
         }
       }
     }

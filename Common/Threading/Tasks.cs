@@ -7,7 +7,11 @@ namespace AwgenCore
   /// </summary>
   public abstract class ThreadTask
   {
-    protected readonly LogicServer logicServer;
+    /// <summary>
+    /// The logic server that this task is being executed on.
+    /// </summary>
+    public readonly LogicServer LogicServer;
+
 
     /// <summary>
     /// Creates a new ThreadTask instance.
@@ -15,7 +19,7 @@ namespace AwgenCore
     /// <param name="logicServer">The logic server managing this task.</param>
     public ThreadTask(LogicServer logicServer)
     {
-      this.logicServer = logicServer;
+      this.LogicServer = logicServer;
     }
 
 
@@ -52,7 +56,7 @@ namespace AwgenCore
     /// <inheritdoc/>
     public override void Execute()
     {
-      if (!this.logicServer.IsRenderThread) throw new InvalidOperationException("Task may only be executed on the Rendering Thread!");
+      if (!this.LogicServer.IsRenderThread) throw new InvalidOperationException("Task may only be executed on the Rendering Thread!");
       ExecuteImpl();
     }
   }
@@ -76,7 +80,7 @@ namespace AwgenCore
     /// <inheritdoc/>
     public override void Execute()
     {
-      if (!this.logicServer.IsLogicThread) throw new InvalidOperationException("Task may only be executed on the Logic Thread!");
+      if (!this.LogicServer.IsLogicThread) throw new InvalidOperationException("Task may only be executed on the Logic Thread!");
       ExecuteImpl();
     }
   }
@@ -109,7 +113,7 @@ namespace AwgenCore
     /// <inheritdoc/>
     public override void Execute()
     {
-      if (!this.logicServer.IsWorkerThread) throw new InvalidOperationException("Task may only be executed on a Worker Thread!");
+      if (!this.LogicServer.IsWorkerThread) throw new InvalidOperationException("Task may only be executed on a Worker Thread!");
       ExecuteImpl();
     }
   }

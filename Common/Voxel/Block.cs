@@ -83,20 +83,29 @@ namespace AwgenCore.Voxel
 
 
     /// <summary>
+    /// Gets the current mesh data for this block. (This getter may be expensive
+    /// for certain block types with many possible conditional output states. It
+    /// is recommended to cache this value where reasonable.)
+    /// </summary>
+    public MeshData Mesh { get => BlockType.GetMeshData(this.properties); }
+
+
+    /// <summary>
     /// Creates a new Block instance.
     /// </summary>
     /// <param name="chunk">The chunk that this block is in.</param>
     /// <param name="position">The position of this block instance.</param>
-    /// <param name="blockType">The type of this block.</param>
-    /// <exception cref="ArgumentNullException">If the block type is null.</exception>
-    internal Block(Chunk chunk, BlockPos position, BlockType blockType)
+    /// <param name="qualifiedName">The qualified name describing the initial block state.</param>
+    /// <exception cref="ArgumentNullException">If the qualified name is null.</exception>
+    internal Block(Chunk chunk, BlockPos position, QualifiedName<BlockType> qualifiedName)
     {
       if (chunk == null) throw new ArgumentNullException(nameof(chunk));
-      if (blockType == null) throw new ArgumentNullException(nameof(blockType));
+      if (qualifiedName == null) throw new ArgumentNullException(nameof(qualifiedName));
 
       Chunk = chunk;
       Position = position;
-      BlockType = blockType;
+      this.blockType = qualifiedName.RegisterableInstance;
+      foreach (var prop in qualifiedName.Properties) this[prop.Key] = prop.Value;
     }
 
 

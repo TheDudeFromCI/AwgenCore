@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace AwgenCore.Voxel
 {
   /// <summary>
@@ -27,5 +29,15 @@ namespace AwgenCore.Voxel
     {
       return true;
     }
+
+
+    /// <summary>
+    /// Gets the mesh data for this block type based off it's current properties.
+    /// Any properties that are not defined in the given dictionary are assumed
+    /// to be equal to their default value for this block type.
+    /// </summary>
+    /// <param name="properties">The property values of a block.</param>
+    /// <returns>What the mesh data for a block would be for a block with the given properties.</returns>
+    public abstract MeshData GetMeshData(Dictionary<string, string> properties);
   }
 }

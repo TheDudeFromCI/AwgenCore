@@ -45,3 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameTickRate: 20
+  cubeMesh: {fileID: 8999967408725239834, guid: 6d93372a6fc8ceec188ce92f8c4a2ced, type: 3}

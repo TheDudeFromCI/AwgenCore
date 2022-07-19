@@ -65,10 +65,11 @@ namespace AwgenCore.Voxel
       World = world;
       Position = chunkPos;
 
+      var blockNames = World.WorldGenerator.GenerateChunk(Position);
       foreach (var pos in CuboidIterator.OverChunk())
       {
         int index = pos.x * 256 + pos.y * 16 + pos.z;
-        this.blocks[index] = new Block(this, pos + chunkPos, BlockRegistry.VOID_BLOCK);
+        this.blocks[index] = new Block(this, pos + chunkPos, blockNames[index]);
       }
 
       World.TriggerChunkLoadedEvent(new ChunkLoadedEvent(this));

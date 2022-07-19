@@ -39,13 +39,15 @@ namespace AwgenCore
     /// <param name="name">The name of the resource.</param>
     /// <param name="classname">The namespace of the resource.</param>
     /// <exception cref="ArgumentException">If the name or classname are empty or null.</exception>
+    /// <exception cref="ArgumentNullException">If the path is null.</exception>
+    /// <exception cref="ArgumentException">If the classname, path, or name are in an invalid format.</exception>
     public ResourceLocation(string classname, string path, string name)
     {
       if (string.IsNullOrEmpty(classname))
         throw new ArgumentException($"'{nameof(classname)}' cannot be null or empty.", nameof(classname));
 
       if (path == null)
-        throw new ArgumentException($"'{nameof(path)}' cannot be null.", nameof(path));
+        throw new ArgumentNullException($"'{nameof(path)}' cannot be null.", nameof(path));
 
       if (string.IsNullOrEmpty(name))
         throw new ArgumentException($"'{nameof(name)}' cannot be null or empty.", nameof(name));
@@ -57,10 +59,31 @@ namespace AwgenCore
       if (!pathRegex.IsMatch(path)) throw new ArgumentException("Invalid path format: " + path, nameof(path));
       if (!nameRegex.IsMatch(name)) throw new ArgumentException("Invalid name format: " + name, nameof(name));
 
-      this.Name = name;
-      this.Path = path;
-      this.Classname = classname;
-      this.Type = typeof(T);
+      Name = name;
+      Path = path;
+      Classname = classname;
+      Type = typeof(T);
+    }
+
+
+    /// <summary>
+    /// Creates a new ResourceLocation instance from a parsed full name string.
+    /// </summary>
+    /// <param name="location">The name of the resource to be parsed.</param>
+    /// <exception cref="ArgumentException">If the location is null, empty, or cannot be parsed.</exception>
+    public ResourceLocation(string location)
+    {
+      if (string.IsNullOrEmpty(location))
+        throw new ArgumentException($"'{nameof(location)}' cannot be null or empty.", nameof(location));
+
+      var regex = new Regex(@"^([a-z0-9_]+):([a-z0-9_]+/)*([a-z0-9_]+)$");
+      var match = regex.Match(location);
+      if (!match.Success) throw new ArgumentException("Invalid resource location string! Cannot parse.", nameof(location));
+
+      Name = match.Groups[3].Value;
+      Path = match.Groups[2].Value ?? "";
+      Classname = match.Groups[1].Value;
+      Type = typeof(T);
     }
 
 

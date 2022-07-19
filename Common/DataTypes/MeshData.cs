@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 using System.Collections.Generic;
 
 namespace AwgenCore
@@ -9,6 +10,9 @@ namespace AwgenCore
   /// </summary>
   public class MeshData
   {
+    private const int MAX_VERTICES = 65536;
+
+
     /// <summary>
     /// Creates a new MeshData instance from an existing Unity mesh object.
     /// </summary>
@@ -57,11 +61,11 @@ namespace AwgenCore
     public void UploadToUnity(Mesh mesh)
     {
       mesh.Clear();
+      mesh.indexFormat = Vertices.Count > MAX_VERTICES ? IndexFormat.UInt32 : IndexFormat.UInt16;
       mesh.SetVertices(Vertices);
       mesh.SetNormals(Normals);
       mesh.SetUVs(0, UVs);
       mesh.SetTriangles(Triangles, 0);
-      mesh.RecalculateBounds();
       mesh.RecalculateTangents();
       mesh.Optimize();
     }

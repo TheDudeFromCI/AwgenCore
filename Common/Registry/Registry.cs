@@ -25,6 +25,22 @@ namespace AwgenCore
 
 
     /// <summary>
+    /// Gets a registable instance from this registry with the given resource
+    /// location name.
+    /// </summary>
+    /// <param name="resourceLocation">The resource location string to parse.</param>
+    /// <returns>The registrable instance, or null if it does not exist.</returns>
+    public T this[string location]
+    {
+      get
+      {
+        var resourceLocation = new ResourceLocation<T>(location);
+        return this[resourceLocation];
+      }
+    }
+
+
+    /// <summary>
     /// Registers a new entry into this registey.
     /// </summary>
     /// <param name="entry">The entry to add.</param>

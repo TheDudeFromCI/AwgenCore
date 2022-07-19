@@ -9,6 +9,12 @@ namespace AwgenCore.Voxel
 
 
     /// <summary>
+    /// Gets the generator that is being used to populate new chunks.
+    /// </summary>
+    public readonly IWorldGenerator WorldGenerator;
+
+
+    /// <summary>
     /// An event that is triggered whenever this world generates a new chunk.
     /// </summary>
     public event Action<ChunkLoadedEvent> onChunkLoaded;
@@ -19,6 +25,16 @@ namespace AwgenCore.Voxel
     /// trigger for blocks being created when a chunk is loaded.
     /// </summary>
     public event Action<BlockUpdatedEvent> onBlockUpdated;
+
+
+    /// <summary>
+    /// Creates a new World instance.
+    /// </summary>
+    /// <param name="worldGenerator">The generator to use for populating new chunks.</param>
+    public World(IWorldGenerator worldGenerator)
+    {
+      WorldGenerator = worldGenerator;
+    }
 
 
     /// <summary>
