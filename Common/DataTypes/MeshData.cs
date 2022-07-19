@@ -54,6 +54,12 @@ namespace AwgenCore
 
 
     /// <summary>
+    /// Gets whether or not this mesh data is an empty mesh.
+    /// </summary>
+    public bool IsEmpty { get => Triangles.Count == 0; }
+
+
+    /// <summary>
     /// Uploads this mesh data into a Unity mesh. This method should only be
     /// called from within the render thread.
     /// </summary>

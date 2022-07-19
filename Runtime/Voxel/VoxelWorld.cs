@@ -52,7 +52,8 @@ namespace AwgenCore.Voxel
     {
       Mesh chunkMesh;
       if (this.chunkObjects.ContainsKey(chunkPos)) chunkMesh = this.chunkObjects[chunkPos];
-      else chunkMesh = CreateChunk(chunkPos);
+      else if (!meshData.IsEmpty) chunkMesh = CreateChunk(chunkPos);
+      else return;
 
       meshData.UploadToUnity(chunkMesh);
     }
